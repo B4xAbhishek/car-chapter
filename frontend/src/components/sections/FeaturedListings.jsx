@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { fetchCars } from '../../api/carApi';
+import { useAuth } from '../../context/AuthContext';
 import CarCard from '../car/CarCard';
 import './FeaturedListings.css';
 
 function FeaturedListings() {
+  const { user } = useAuth();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     setLoading(true);
-    fetchCars()
+    fetchCars(user?.id || null)
       .then((data) => { setCars(data || []); setError(null); })
       .catch((err) => { console.error(err); setError('Unable to load listings right now.'); })
       .finally(() => setLoading(false));

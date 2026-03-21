@@ -3,7 +3,9 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  /* Above page overlays (e.g. BuyCar filters at 2000) */
+  z-index: 11000;
+  margin-bottom: 16px;
   padding: 1.1rem 0;
   background: rgba(6, 6, 12, 0.5);
   backdrop-filter: blur(20px) saturate(180%);
@@ -23,6 +25,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
+  min-width: 0;
 }
 
 /* ── Logo ── */
@@ -63,6 +66,12 @@
 
 /* ── Nav Links ── */
 .navbar__links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar__links--desktop {
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -70,7 +79,7 @@
   justify-content: center;
 }
 
-.navbar__links li a {
+.navbar__links--desktop li a {
   font-size: 0.82rem;
   font-weight: 500;
   color: var(--text-secondary);
@@ -79,15 +88,43 @@
   letter-spacing: 0.02em;
   transition: var(--transition);
   white-space: nowrap;
+  text-decoration: none;
 }
 
-.navbar__links li a:hover {
+.navbar__links--desktop li a:hover {
   color: var(--text-primary);
   background: var(--border);
 }
 
-.navbar__links li a.active {
+.navbar__links--desktop li a.active {
   color: var(--gold-light);
+}
+
+/* Mobile sheet link list */
+.navbar__links--mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.navbar__links--mobile li a {
+  display: block;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius-md);
+  letter-spacing: 0.02em;
+  transition: var(--transition);
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.navbar__links--mobile li a:hover,
+.navbar__links--mobile li a:focus-visible {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+  outline: none;
 }
 
 /* ── Actions ── */
@@ -313,8 +350,211 @@
   background: rgba(248, 246, 241, 0.95);
 }
 
-/* ── Mobile ── */
-@media (max-width: 900px) {
-  .navbar__links { display: none; }
-  .navbar__btn-login { display: none; }
+[data-theme="light"] .navbar__mobile-sheet {
+  background: rgba(248, 246, 241, 0.98);
+  border-top-color: var(--border);
+}
+
+[data-theme="light"] .navbar__mobile-backdrop {
+  background: rgba(0, 0, 0, 0.28);
+}
+
+[data-theme="light"] .navbar__menu-toggle {
+  background: var(--bg-card);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+/* ── Mobile top row: logo + hamburger ── */
+.navbar__container--mobile {
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.75rem;
+}
+
+.navbar__menu-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  padding: 0;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.navbar__menu-toggle:hover {
+  border-color: var(--gold-border);
+  background: var(--gold-dim);
+  color: var(--gold);
+}
+
+.navbar__menu-toggle:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ── Mobile menu overlay & sheet (siblings of <nav>, not inside — avoids fixed + backdrop-filter trap) ── */
+.navbar__mobile-backdrop {
+  position: fixed;
+  /* Below fixed bar + margin gap so content isn’t tucked under the header */
+  top: calc(4.35rem + 16px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 11001;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.22s ease, visibility 0.22s;
+}
+
+.navbar__mobile-backdrop.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.navbar__mobile-sheet {
+  position: fixed;
+  top: calc(4.35rem + 16px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 11002;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem 1.25rem max(2rem, env(safe-area-inset-bottom));
+  background: rgba(6, 6, 12, 0.98);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border-top: 1px solid var(--border);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-10px);
+  transition: opacity 0.22s ease, visibility 0.22s, transform 0.22s ease;
+}
+
+.navbar__mobile-sheet.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.navbar__admin-bar--mobile {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.navbar__approvals-link--block {
+  width: 100%;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.navbar__mobile-auth {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.navbar__btn-login--block,
+.navbar__btn-primary--block {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.navbar__mobile-account {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.navbar__mobile-account-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.navbar__mobile-account-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.navbar__mobile-account-email {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navbar__mobile-account-divider {
+  margin: 0.5rem 0;
+}
+
+.navbar__mobile-account-link {
+  border-radius: var(--radius-md) !important;
+}
+
+/* ── Admin Approvals link (desktop bar only; .navbar__admin-bar alone must not override mobile display:none) ── */
+.navbar__admin-bar--desktop {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__admin-bar--mobile {
+  display: block;
+}
+
+.navbar__approvals-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+  background: rgba(200, 151, 58, 0.12);
+  border: 1px solid rgba(200, 151, 58, 0.35);
+  border-radius: 8px;
+  color: var(--gold);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+  margin-right: 0.75rem;
+}
+
+.navbar__approvals-link:hover {
+  background: rgba(200, 151, 58, 0.22);
+  transform: translateY(-1px);
+}
+
+.navbar__approvals-badge {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--gold);
+  color: #0C0C16;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
 }

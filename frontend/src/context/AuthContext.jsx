@@ -25,10 +25,10 @@ export function AuthProvider({ children }) {
       return;
     }
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setUser(session?.user ?? null);
-      if (session?.user) fetchProfile(session.user.id);
-      setLoading(false);
+      if (session?.user) await fetchProfile(session.user.id);
+      setLoading(false);   // only clears AFTER profile is loaded
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -54,13 +54,12 @@ export function AuthProvider({ children }) {
     });
     if (error) throw error;
 
-    // Insert profile row — role defaults to 'user' in the DB
+    // Insert profile row only if it doesn't exist — never overwrite existing role
     if (data.user) {
-      await supabase.from('profiles').upsert({
-        id: data.user.id,
-        full_name: fullName,
-        role: 'user',
-      });
+      await supabase.from('profiles').upsert(
+        { id: data.user.id, full_name: fullName, role: 'user' },
+        { onConflict: 'id', ignoreDuplicates: true }
+      );
     }
 
     return data;

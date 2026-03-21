@@ -14,6 +14,10 @@ import Footer from './components/layout/Footer';
 
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import SellCarPage from './pages/SellCarPage';
+import MyListingsPage from './pages/MyListingsPage';
+import BuyCarPage from './pages/BuyCarPage';
+import AdminApprovalsPage from './pages/AdminApprovalsPage';
 
 import './styles/global.css';
 
@@ -39,12 +43,23 @@ function GuestRoute({ children }) {
   return isAuthenticated ? <Navigate to="/" replace /> : children;
 }
 
+// Admin-only route
+function AdminRoute({ children }) {
+  const { isAdmin, loading } = useAuth();
+  if (loading) return null;
+  return isAdmin ? children : <Navigate to="/" replace />;
+}
+
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
       <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
+      <Route path="/buy" element={<BuyCarPage />} />
+      <Route path="/sell" element={<SellCarPage />} />
+      <Route path="/my-listings" element={<MyListingsPage />} />
+      <Route path="/admin/approvals" element={<AdminRoute><AdminApprovalsPage /></AdminRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
