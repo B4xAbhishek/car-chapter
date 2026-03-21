@@ -3,6 +3,27 @@
 /* ============================================================
    CARCHAPTER – PREMIUM DESIGN SYSTEM
    ============================================================ */
+
+/* ── Light mode overrides ── */
+[data-theme="light"] {
+  --bg-void:       #F8F6F1;
+  --bg-dark:       #F0EDE6;
+  --bg-surface:    #ECEAE2;
+  --bg-card:       #FFFFFF;
+  --bg-card-hover: #F5F3EE;
+  --bg-glass:      rgba(255, 255, 255, 0.75);
+
+  --text-primary:   #1A1A2E;
+  --text-secondary: #4A4868;
+  --text-muted:     #9896A8;
+
+  --border:         rgba(0, 0, 0, 0.07);
+  --border-hover:   rgba(0, 0, 0, 0.14);
+
+  --shadow-card:    0 4px 24px rgba(0, 0, 0, 0.1);
+  --shadow-gold:    0 0 40px rgba(200, 151, 58, 0.15);
+}
+
 :root {
   /* Backgrounds */
   --bg-void:       #06060C;

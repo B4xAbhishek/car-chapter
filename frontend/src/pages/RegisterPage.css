@@ -1,0 +1,120 @@
+.register-visual {
+  background-image: url('https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&w=1200&q=80');
+}
+
+/* ── Perks list ── */
+.register-perks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.register-perk {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.register-perk__icon {
+  font-size: 1rem;
+  width: 28px;
+  flex-shrink: 0;
+}
+
+.register-perk__text {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.75);
+}
+
+/* ── Password strength ── */
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.3rem;
+}
+
+.password-strength__bar {
+  flex: 1;
+  height: 4px;
+  background: var(--border-hover);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.password-strength__fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease, background 0.3s ease;
+  background: #EF4444;
+}
+
+.password-strength__bar--fair   .password-strength__fill { background: #F59E0B; }
+.password-strength__bar--good   .password-strength__fill { background: #10B981; }
+.password-strength__bar--strong .password-strength__fill { background: var(--gold); }
+
+.password-strength__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  min-width: 40px;
+  color: #EF4444;
+}
+
+.password-strength__label--fair   { color: #F59E0B; }
+.password-strength__label--good   { color: #10B981; }
+.password-strength__label--strong { color: var(--gold); }
+
+/* ── Success state ── */
+.auth-success {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: rgba(20, 184, 166, 0.08);
+  border: 1px solid rgba(20, 184, 166, 0.25);
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
+}
+
+.auth-success__icon {
+  font-size: 1.25rem;
+  color: var(--teal);
+  flex-shrink: 0;
+}
+
+.auth-success strong {
+  display: block;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+.auth-success p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+
+.auth-success__link {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--gold);
+  transition: var(--transition);
+}
+
+.auth-success__link:hover { color: var(--gold-light); }
+
+/* ── Terms ── */
+.auth-terms {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.auth-terms a {
+  color: var(--text-secondary);
+  transition: var(--transition);
+}
+
+.auth-terms a:hover { color: var(--gold); }
