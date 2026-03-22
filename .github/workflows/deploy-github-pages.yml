@@ -17,12 +17,21 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Repository secrets: Settings → Secrets and variables → Actions → New repository secret.
+    # Names must match exactly: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY (Vite inlines them at build time).
     env:
       VITE_BASE_PATH: /${{ github.event.repository.name }}/
-      VITE_SUPABASE_URL: ${{ secrets['VITE_SUPABASE_URL'] }}
-      VITE_SUPABASE_ANON_KEY: ${{ secrets['VITE_SUPABASE_ANON_KEY'] }}
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Require Supabase secrets for build
+        run: |
+          if [ -z "${VITE_SUPABASE_URL}" ] || [ -z "${VITE_SUPABASE_ANON_KEY}" ]; then
+            echo "::error::Add repository secrets VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (Settings → Secrets and variables → Actions). Environment-only secrets are not visible to this job unless you add environment: here."
+            exit 1
+          fi
 
       - uses: actions/setup-node@v4
         with:
