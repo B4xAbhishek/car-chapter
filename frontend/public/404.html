@@ -5,9 +5,10 @@
     <title>CarChapter</title>
     <script>
       // Redirect unknown GitHub Pages paths back to index with encoded route.
-      // Keep first segment for project pages: /<repo-name>/...
-      var pathSegmentsToKeep = 1;
+      // Keep 1 segment for project pages (/repo/route), 0 for user pages (/route).
       var l = window.location;
+      var pathParts = l.pathname.split('/').filter(Boolean);
+      var pathSegmentsToKeep = pathParts.length > 1 ? 1 : 0;
       var keptPath = l.pathname
         .split('/')
         .slice(0, 1 + pathSegmentsToKeep)
