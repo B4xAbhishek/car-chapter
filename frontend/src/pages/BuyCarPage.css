@@ -19,6 +19,8 @@
   display: flex;
   align-items: center;
   overflow: hidden;
+  margin-top: calc(-1 * var(--layout-navbar-total));
+  padding-top: var(--layout-navbar-total);
 }
 
 .bc-hero__bg {
@@ -329,8 +331,8 @@
    ────────────────────────────────────────────────────────── */
 .bc-sidebar {
   position: sticky;
-  top: 90px;
-  max-height: calc(100vh - 110px);
+  top: var(--layout-navbar-total);
+  max-height: calc(100vh - var(--layout-navbar-total));
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;

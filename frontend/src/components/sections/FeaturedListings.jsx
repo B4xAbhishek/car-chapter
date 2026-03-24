@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchCars } from '../../api/carApi';
 import { useAuth } from '../../context/AuthContext';
 import CarCard from '../car/CarCard';
 import './FeaturedListings.css';
 
 function FeaturedListings() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,7 +18,7 @@ function FeaturedListings() {
       .then((data) => { setCars(data || []); setError(null); })
       .catch((err) => { console.error(err); setError('Unable to load listings right now.'); })
       .finally(() => setLoading(false));
-  }, []);
+  }, [user?.id]);
 
   return (
     <section className="featured" id="buy">
@@ -29,7 +31,9 @@ function FeaturedListings() {
               Curated, verified vehicles from trusted defence community sellers
             </p>
           </div>
-          <button className="featured__view-all">View All Listings →</button>
+          <button type="button" className="featured__view-all" onClick={() => navigate('/buy')}>
+            View All Listings →
+          </button>
         </div>
 
         <div className="featured__filter">

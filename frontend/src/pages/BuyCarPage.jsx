@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import { fetchCars } from '../api/carApi';
@@ -13,6 +13,12 @@ function formatINR(val) {
   if (n >= 10000000) return `₹${(n / 10000000).toFixed(2)} Cr`;
   if (n >= 100000)   return `₹${(n / 100000).toFixed(1)}L`;
   return `₹${String(n).replace(/(\d)(?=(\d\d)+\d$)/g, '$1,')}`;
+}
+
+function formatINRPublic(val, canSeePrice) {
+  if (!val) return '—';
+  if (!canSeePrice) return '₹ •••••••';
+  return formatINR(val);
 }
 
 function getHeroImage(listing) {
@@ -62,6 +68,8 @@ function SkeletonCard() {
 
 /* ─── Car Detail Modal ────────────────────────────────────── */
 function CarDetailModal({ car, onClose }) {
+  const { user } = useAuth();
+  const canSeePrice = !!user;
   const [activePhoto, setActivePhoto] = useState(car.hero_index || 0);
   const photos = car.photos || [];
 
@@ -136,7 +144,7 @@ function CarDetailModal({ car, onClose }) {
               {car.variant && <p className="bc-modal__variant">{car.variant}</p>}
             </div>
             <div className="bc-modal__price-col">
-              <span className="bc-modal__price">{formatINR(car.price)}</span>
+              <span className="bc-modal__price">{formatINRPublic(car.price, canSeePrice)}</span>
               {car.negotiable && <span className="bc-modal__neg">Negotiable</span>}
             </div>
           </div>
@@ -189,7 +197,7 @@ function CarDetailModal({ car, onClose }) {
 }
 
 /* ─── Car Card (Grid) ─────────────────────────────────────── */
-function CarCardGrid({ car, onSelect }) {
+function CarCardGrid({ car, onSelect, canSeePrice }) {
   const img = getHeroImage(car);
   return (
     <article className="bc-card bc-card--grid" onClick={() => onSelect(car)} style={{cursor:'pointer'}}>
@@ -223,7 +231,7 @@ function CarCardGrid({ car, onSelect }) {
             {car.variant && <p className="bc-card__variant">{car.variant}</p>}
           </div>
           <div className="bc-card__price-col">
-            <span className="bc-card__price">{formatINR(car.price)}</span>
+            <span className="bc-card__price">{formatINRPublic(car.price, canSeePrice)}</span>
             {car.negotiable && <span className="bc-card__neg">Negotiable</span>}
           </div>
         </div>
@@ -260,7 +268,7 @@ function CarCardGrid({ car, onSelect }) {
 }
 
 /* ─── Car Card (List) ─────────────────────────────────────── */
-function CarCardList({ car, onSelect }) {
+function CarCardList({ car, onSelect, canSeePrice }) {
   const img = getHeroImage(car);
   return (
     <article className="bc-card bc-card--list" onClick={() => onSelect(car)} style={{cursor:'pointer'}}>
@@ -292,7 +300,7 @@ function CarCardList({ car, onSelect }) {
             {car.description && <p className="bc-card__desc">{car.description.slice(0, 120)}…</p>}
           </div>
           <div className="bc-card__list-right">
-            <span className="bc-card__price">{formatINR(car.price)}</span>
+            <span className="bc-card__price">{formatINRPublic(car.price, canSeePrice)}</span>
             {car.negotiable && <span className="bc-card__neg">Negotiable</span>}
             <button className="bc-card__list-btn" onClick={e => { e.stopPropagation(); onSelect(car); }}>View Details</button>
           </div>
@@ -319,6 +327,8 @@ function FilterSection({ title, children, defaultOpen = true }) {
 /* ─── Main Page ───────────────────────────────────────────── */
 export default function BuyCarPage() {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const canSeePrice = !!user;
 
   /* Data */
   const [allCars, setAllCars]   = useState([]);
@@ -350,11 +360,44 @@ export default function BuyCarPage() {
   const PER_PAGE = 12;
   const listingsRef = useRef(null);
 
+  const openCar = useCallback((car) => {
+    setSelectedCar(car);
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set('car', String(car.id));
+      return next;
+    });
+  }, [setSearchParams]);
+
+  const closeCar = useCallback(() => {
+    setSelectedCar(null);
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.delete('car');
+      return next;
+    });
+  }, [setSearchParams]);
+
   useEffect(() => {
     fetchCars(user?.id || null)
       .then(data => { setAllCars(data); setLoading(false); })
       .catch(e   => { setError(e.message); setLoading(false); });
   }, [user]);
+
+  /* Open detail modal when linked from home (?car=…) or shared URL */
+  useEffect(() => {
+    if (loading) return;
+    const carId = searchParams.get('car');
+    if (!carId) return;
+    const found = allCars.find((c) => String(c.id) === String(carId));
+    if (found) {
+      setSelectedCar((prev) =>
+        prev && String(prev.id) === String(found.id) ? prev : found
+      );
+    } else if (allCars.length > 0) {
+      setSelectedCar(null);
+    }
+  }, [loading, allCars, searchParams]);
 
   /* Toggle helper */
   const toggle = (arr, setArr, val) =>
@@ -676,8 +719,8 @@ export default function BuyCarPage() {
               <div className={`bc-grid bc-grid--${viewMode}`}>
                 {paginated.map(car =>
                   viewMode === 'grid'
-                    ? <CarCardGrid key={car.id} car={car} onSelect={setSelectedCar} />
-                    : <CarCardList key={car.id} car={car} onSelect={setSelectedCar} />
+                    ? <CarCardGrid key={car.id} car={car} onSelect={openCar} canSeePrice={canSeePrice} />
+                    : <CarCardList key={car.id} car={car} onSelect={openCar} canSeePrice={canSeePrice} />
                 )}
               </div>
 
@@ -698,7 +741,7 @@ export default function BuyCarPage() {
 
       <Footer />
 
-      {selectedCar && <CarDetailModal car={selectedCar} onClose={() => setSelectedCar(null)} />}
+      {selectedCar && <CarDetailModal car={selectedCar} onClose={closeCar} />}
     </div>
   );
 }

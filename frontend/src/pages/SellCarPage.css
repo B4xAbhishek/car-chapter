@@ -12,10 +12,8 @@
    PROGRESS BAR — fixed below navbar
    ────────────────────────────────────────── */
 .sell-progress {
-  position: fixed;
-  top: 64px; /* sits flush below the 64px navbar */
-  left: 0;
-  right: 0;
+  position: sticky;
+  top: var(--layout-navbar-total);
   z-index: 900;
   background: var(--bg-dark);
   border-bottom: 1px solid var(--border);
@@ -86,7 +84,7 @@
    PAGE BODY — clears navbar + progress bar
    ────────────────────────────────────────── */
 .sell-page__body {
-  padding-top: 116px; /* 64px navbar + 52px progress */
+  padding-top: 0;
 }
 
 /* ──────────────────────────────────────────
@@ -1052,7 +1050,7 @@
   /* Progress bar — compact for narrow screens */
   .sell-progress {
     height: 44px;
-    top: 60px;
+    top: var(--layout-navbar-total);
   }
   .sell-progress__step {
     font-size: 0.7rem;
@@ -1071,9 +1069,8 @@
     display: none; /* hide text labels, show only dots */
   }
 
-  /* Body clears smaller navbar + smaller progress */
   .sell-page__body {
-    padding-top: 104px; /* 60px navbar + 44px progress */
+    padding-top: 0;
   }
 
   /* Hero — shorter */

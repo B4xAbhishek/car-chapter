@@ -1,4 +1,6 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './CarCard.css';
 
 const FALLBACK_IMAGES = [
@@ -16,6 +18,8 @@ function heroImageUrl(listing) {
 }
 
 function CarCard({ car, index = 0 }) {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const make = car.make ?? car.brand;
   const model = car.model;
   const { year, km_driven } = car;
@@ -30,9 +34,12 @@ function CarCard({ car, index = 0 }) {
     (Array.isArray(car.images) && car.images[0]) ||
     FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
 
-  const formattedPrice = price
-    ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(price)
-    : '₹ On Request';
+  const formattedPrice =
+    price && isAuthenticated
+      ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(price)
+      : price && !isAuthenticated
+        ? '₹ •••••••'
+        : '₹ On Request';
 
   const formattedKm = km_driven
     ? `${new Intl.NumberFormat('en-IN').format(km_driven)} km`
@@ -71,7 +78,13 @@ function CarCard({ car, index = 0 }) {
         )}
 
         <div className="car-card__cta">
-          <button className="car-card__btn">View Details →</button>
+          <button
+            type="button"
+            className="car-card__btn"
+            onClick={() => car?.id != null && navigate(`/buy?car=${encodeURIComponent(car.id)}`)}
+          >
+            View Details →
+          </button>
         </div>
       </div>
     </div>
